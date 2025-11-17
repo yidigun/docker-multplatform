@@ -2,5 +2,4 @@
 /Makefile*
 /build
 /local.config.*
-/*.example
 README.md
