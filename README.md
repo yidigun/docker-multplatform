@@ -12,7 +12,7 @@
 
 `local.config.mk` 파일을 생성해서 변수를 수정하면 로컬에 맞는 환경 정보를 덮어쓰도록 할 수 잇다.
 
-```
+```makefile
 # local.config.mk
 
 IMAGE_NAME=test1/my-hello
@@ -24,15 +24,24 @@ CONTEXT_WINDOWS=default
 기본적으로 퍼블릭 레포지토리(레지스트리)에 푸시하지 않도록 되어있는데,
 릴리즈할 때는 다음과 같이 명령행에서 오버라이드 가능하다.
 
-```
+```shell
 make PUSH_PUBLIC=yes SET_LATEST=yes
 ```
 
 ### Buildx용 builder 생성
 
-`$builder`는 `Makefile`에 설정된 빌더 이름이어야 한다.
+`Makefile`의 `$(BUILDER_CONFIG)` 설정을 수정한다.
 
+```makefile
+define BUILDER_CONFIG
+anas ssh://anas linux/arm64,linux/arm/v7,linux/arm/v6
+xvms ssh://xvms linux/amd64,linux/amd64/v2,linux/riscv64,linux/ppc64,linux/ppc64le,linux/s390x, linux/386, linux/loong64
+endef
 ```
+
+`$builder`는 `Makefile`에 설정된 `$(BUILDER)` 이름이어야 한다.
+
+```shell
 make create-$builder
 ```
 
@@ -122,7 +131,7 @@ https://learn.microsoft.com/ko-kr/virtualization/windowscontainers/deploy-contai
 
 리눅스만 만드는 경우는 Buildx 플러그인을 이용하면 다중 플랫폼 이미지를 쉽게 생성할 수 있다.
 
-```
+```shell
 docker buildx build --builder mybuilder \
 -t my-img:latest \
 --platform linux/amd64,linux/386,linux/arm64,linux/arm/v7 \
@@ -140,7 +149,7 @@ Buildkit을 사용할 수가 없다. OS버전 마다 `docker build`를 이용해
 
 각각의 이미지를 만들어서 레지스트리에 push 한 이후에 `regctl`명령으로 manifest list를 수동으로 생성해줘야 한다.
 
-```
+```shell
 # 통합 태그 생성
 regctl index create --media-type application/vnd.docker.distribution.manifest.list.v2+json \
 docker.io/dagui0/my-hello:20251117-6 \
