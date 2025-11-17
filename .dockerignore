@@ -1,0 +1,5 @@
+/Dockerfile*
+/Makefile*
+/build
+/local.config.*
+README.md

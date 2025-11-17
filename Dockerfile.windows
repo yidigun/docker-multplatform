@@ -1,0 +1,16 @@
+ARG BASE_IMAGE=nanoserver
+ARG BASE_VERSION=ltsc2022
+FROM mcr.microsoft.com/windows/$BASE_IMAGE:$BASE_VERSION
+
+ARG BASE_IMAGE=nanoserver
+ARG BASE_VERSION=ltsc2022
+ARG IMAGE_NAME
+ARG IMAGE_TAG
+
+ENV BASE_IMAGE="$BASE_IMAGE"
+ENV BASE_VERSION="$BASE_VERSION"
+ENV IMAGE_NAME="$IMAGE_NAME"
+ENV IMAGE_TAG="$IMAGE_TAG"
+
+COPY hello.txt hello.cmd /
+CMD ["C:\\Windows\\System32\\cmd.exe", "/C", "C:\\hello.cmd"]

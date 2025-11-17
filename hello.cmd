@@ -1,0 +1,11 @@
+@echo off
+
+type C:\hello.txt
+
+ver
+echo ARCH=%PROCESSOR_ARCHITECTURE%
+
+echo BASE_IMAGE=%BASE_IMAGE%
+echo BASE_VERSION=%BASE_VERSION%
+echo IMAGE_NAME=%IMAGE_NAME%
+echo IMAGE_TAG=%IMAGE_TAG%
