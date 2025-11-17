@@ -6,7 +6,15 @@
 
 ### 요구사항
 
-* regclient/regctl: https://regclient.org/install/
+* GNU bash: https://www.gnu.org/software/bash/
+* GNU make: https://www.gnu.org/software/make/
+* `docker-cli`, `docker-buildx-pligin`: https://www.docker.com/
+* `regclient/regctl`: https://regclient.org/install/
+* 필요한 호스트 목록 (Windows PC 1대로도 가능은 함)
+    * make를 실행할 Linux 호스트 (WSL 가능)
+    * 리눅스 이미지 빌드 가능한 x86_64(amd64), aarch64(arm64) 호스트 (WSL 가능, 느리지만 `qemu-user-static` 가능)
+    * Windows 컨테이너 빌드 가능한 호스트
+        * Docker Desktop 사용시 Docker Desktop은 Windows 컨테이너로 설정하고, WSL에는 리눅스용 docker 별도 설치
 
 ### 로컬 설정 파일 `config.local.mk`
 
