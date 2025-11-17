@@ -122,7 +122,7 @@ build/windows-ltsc2025-$(IMAGE_TAG): Dockerfile.windows $(WINDOWS_FILES)
 	mkdir -p build && touch $@
 
 build/windows-ltsc2022-$(IMAGE_TAG): Dockerfile.windows $(WINDOWS_FILES) \
-			build/windows-ltsc2025-$(IMAGE_TAG) # for sequencial build on single host
+			build/windows-ltsc2025-$(IMAGE_TAG) # for sequential build on single host
 	PUBLIC_REPO="$(PUBLIC_REPO)" \
 	LOCAL_REPO="$(LOCAL_REPO)" \
 	IMAGE_NAME="$(IMAGE_NAME)" \
@@ -137,7 +137,7 @@ build/windows-ltsc2022-$(IMAGE_TAG): Dockerfile.windows $(WINDOWS_FILES) \
 	mkdir -p build && touch $@
 
 build/windows-ltsc2019-$(IMAGE_TAG): Dockerfile.windows $(WINDOWS_FILES) \
-			build/windows-ltsc2022-$(IMAGE_TAG) # for sequencial build on single host
+			build/windows-ltsc2022-$(IMAGE_TAG) # for sequential build on single host
 	PUBLIC_REPO="$(PUBLIC_REPO)" \
 	LOCAL_REPO="$(LOCAL_REPO)" \
 	IMAGE_NAME="$(IMAGE_NAME)" \
