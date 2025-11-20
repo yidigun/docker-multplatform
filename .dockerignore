@@ -3,6 +3,6 @@
 /Dockerfile*
 /Makefile*
 /build
-/local.config.*
+/local.mk
 /*.example
-README.md
+/README.md
