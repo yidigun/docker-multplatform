@@ -1,7 +1,11 @@
-#################
-# Hello, world! #
-#################
 
-This is a example container for multi-platform docker image building configuration.
+╭╮╱╭╮╱╱╭╮╭╮╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭╮╱╱╭┳╮
+┃┃╱┃┃╱╱┃┃┃┃╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱┃┃╱╱┃┃┃
+┃╰━╯┣━━┫┃┃┃╭━━╮╱╭╮╭╮╭┳━━┳━┫┃╭━╯┃┃
+┃╭━╮┃┃━┫┃┃┃┃╭╮┃╱┃╰╯╰╯┃╭╮┃╭┫┃┃╭╮┣╯
+┃┃╱┃┃┃━┫╰┫╰┫╰╯┣╮╰╮╭╮╭┫╰╯┃┃┃╰┫╰╯┣╮
+╰╯╱╰┻━━┻━┻━┻━━┻┫╱╰╯╰╯╰━━┻╯╰━┻━━┻╯
+╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╯
+
+This is an example container for building multi-platform Docker images.
 See https://github.com/yidigun/docker-multiplatform.
-

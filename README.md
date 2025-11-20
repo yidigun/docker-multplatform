@@ -10,18 +10,19 @@
 * GNU make: https://www.gnu.org/software/make/
 * `docker-cli`, `docker-buildx-pligin`: https://www.docker.com/
 * `regclient/regctl`: https://regclient.org/install/
+* 로컬 레지스트리: [docker-registry로 구성 가능](https://hub.docker.com/_/registry)
 * 필요한 호스트 목록 (Windows PC 1대로도 가능은 함)
     * make를 실행할 Linux 호스트 (WSL 가능)
     * 리눅스 이미지 빌드 가능한 x86_64(amd64), aarch64(arm64) 호스트 (WSL 가능, 느리지만 `qemu-user-static` 가능)
     * Windows 컨테이너 빌드 가능한 호스트
         * Docker Desktop 사용시 Docker Desktop은 Windows 컨테이너로 설정하고, WSL에는 리눅스용 docker 별도 설치
 
-### 로컬 설정 파일 `config.local.mk`
+### 로컬 설정 파일 `local.mk`
 
-`local.config.mk` 파일을 생성해서 변수를 수정하면 로컬에 맞는 환경 정보를 덮어쓰도록 할 수 잇다.
+`local.mk` 파일을 생성해서 변수를 수정하면 로컬에 맞는 환경 정보를 덮어쓰도록 할 수 잇다.
 
 ```makefile
-# local.config.mk
+# local.mk
 
 IMAGE_NAME=test1/my-hello
 CONTEXT_WINDOWS=default
@@ -36,21 +37,28 @@ CONTEXT_WINDOWS=default
 make PUSH_PUBLIC=yes SET_LATEST=yes
 ```
 
+태그를 합친 이후 OS별 태그를 지우지 않도록 할 수 있다.
+
+```shell
+make RM_OS_TAGS=no
+```
+
 ### Buildx용 builder 생성
 
-`Makefile`의 `$(BUILDER_CONFIG)` 설정을 수정한다.
+`Makefile`의 `$(BUILDER)`와 `$(BUILDER_CONFIG)` 설정을 수정한다.
 
 ```makefile
+BUILDER = linuxbuilder
 define BUILDER_CONFIG
 anas ssh://anas linux/arm64,linux/arm/v7,linux/arm/v6
-xvms ssh://xvms linux/amd64,linux/amd64/v2,linux/riscv64,linux/ppc64,linux/ppc64le,linux/s390x, linux/386, linux/loong64
+xvms ssh://xvms linux/amd64,linux/amd64/v2,linux/riscv64,linux/ppc64,linux/ppc64le,linux/s390x,linux/386,linux/loong64
 endef
 ```
 
-`$builder`는 `Makefile`에 설정된 `$(BUILDER)` 이름이어야 한다.
+`$(BUILDER)`는 다음과 같이 생성할 수 있다.
 
 ```shell
-make create-$builder
+make cretae-linuxbuilder   
 ```
 
 ## 다중 플랫폼 이미지의 구조
@@ -69,32 +77,32 @@ Docker 데몬은 이 `Platform`을 보고 자신에게 맞는 이미지를 선�
 $ docker buildx imagetools inspect dagui0/my-hello:latest
 Name:      docker.io/dagui0/my-hello:latest
 MediaType: application/vnd.docker.distribution.manifest.list.v2+json
-Digest:    sha256:d2ec59f68e235b250157f1f03f2a7a5177362341ec489e494fc01580fe1b3a41
+Digest:    sha256:521badde5191f0918e30369258bc8c526f32b43b9dd20773d65fbf249eee91ae
            
 Manifests: 
-  Name:      docker.io/dagui0/my-hello:latest@sha256:fadf49d7011c5478e9e0f589651fb776e5d8205b4def73852806cabf97ff189d
+  Name:      docker.io/dagui0/my-hello:latest@sha256:30dca121ae3f3522958dd23674d5b62c0a2b3d6c0f4556a76c01e1ef0bd8b984
   MediaType: application/vnd.oci.image.manifest.v1+json
   Platform:  linux/amd64
              
-  Name:      docker.io/dagui0/my-hello:latest@sha256:5d7263677ef187f5563d7282583915b5e523e8713d3e1d29a4cee3ebc28a76fb
+  Name:      docker.io/dagui0/my-hello:latest@sha256:7aafc6244c284dcd920337408c80e6a9f10cdc1483bfeb4ceacae04c4718bb2f
   MediaType: application/vnd.oci.image.manifest.v1+json
   Platform:  linux/arm64
              
-  Name:      docker.io/dagui0/my-hello:latest@sha256:5995f61672ae515d63d10d39053bd829ba5f57c1a46f62f52746e1e5f1b19458
+  Name:      docker.io/dagui0/my-hello:latest@sha256:69ecf49346e8bbc6784894f1058a5934c71b1fe43a45a026c8cd21bac50ccb5e
   MediaType: application/vnd.oci.image.manifest.v1+json
   Platform:  linux/arm/v7
              
-  Name:      docker.io/dagui0/my-hello:latest@sha256:cadc87f4a91eee0f50710be285d6f69b57598b4e24b964ea7ce68dec8528f4ab
+  Name:      docker.io/dagui0/my-hello:latest@sha256:ebc7887c81148c96e2779547a2ce832cbd95e79107e5073ca065ce5ab881ff10
   MediaType: application/vnd.docker.distribution.manifest.v2+json
   Platform:  windows/amd64
   OSVersion: 10.0.17763.8027
              
-  Name:      docker.io/dagui0/my-hello:latest@sha256:4644f2f4f21ca85437ad07ae598457760e0ed56f00d33aa252a4b580afb128d8
+  Name:      docker.io/dagui0/my-hello:latest@sha256:5bb268aea002ba075f430c8088b1be4cd7968c1fdef976fb4750ee33c8421dc6
   MediaType: application/vnd.docker.distribution.manifest.v2+json
   Platform:  windows/amd64
   OSVersion: 10.0.20348.4405
              
-  Name:      docker.io/dagui0/my-hello:latest@sha256:a628b385a080418b0caab013d592b82e631af4953e75d824659142916dc1e7e2
+  Name:      docker.io/dagui0/my-hello:latest@sha256:24ab5066873b6262464a8dc30f0d71ed6cd108f6837ceafadf70e732288e79cc
   MediaType: application/vnd.docker.distribution.manifest.v2+json
   Platform:  windows/amd64
   OSVersion: 10.0.26100.7171
@@ -108,12 +116,10 @@ Windows 컨테이너는 호스트 OS버전과 컨테이너의 버전이 맞아�
 | Host OS             | `ltsc2025` | `ltsc2022` | `ltsc20019`     |
 |---------------------|------------|------------|-----------------|
 | Windows 11          | 가능       | 가능       | `hyperv`만 가능 |
-| Windows Server 2022 | 불가       | 가능       | `hyperv`만 가능 |
+| Windows Server 2025 | 가능       | 가능       | `hyperv`만 가능 |
+| Windows Server 2022 | **불가**   | 가능       | `hyperv`만 가능 |
 
-OS 버전이 호환되지 않는 경우 구동이 불가능한 경우 아래와 같은 오류 발생하며, `hyperv`방식으로는 구동이 가능할 수 있다.
-
-WSL이나 macOS에서 docker를 구동할 경우 1개의 Linux VM에서 모든 컨테이너를 돌리지만, 
-`hyperv` 방식은 컨테이너마다 VM을 하나씩 생성하는 것으로 오버헤드가 상당히 클 수 밖에 없다.
+OS 버전이 호환되지 않는 경우 아래와 같은 오류가 발생하며, `hyperv`방식으로는 구동이 가능할 수 있다.
 
 ```
 C:\Users\dagui>docker run --rm --isolation=process anas:5000/dagui0/my-hello:windows-ltsc2019-20251117-7
@@ -122,10 +128,13 @@ docker: Error response from daemon: container e69d2e7285e9cfd4ea3cfc7ae51719cfe3
 Run 'docker run --help' for more information
 ```
 
-하지만 호스트 OS보다 높은 버전의 컨테이너 이미지는 `hyperv`로도 구동이 불가능하다. (이건 아무래도 라이센스와 어른들의 사정이 문제일듯 싶다)
+WSL이나 macOS에서 docker를 구동할 경우 1개의 Linux VM에서 모든 컨테이너를 돌리지만, 
+`hyperv` 방식은 컨테이너마다 VM을 하나씩 생성하는 것으로 오버헤드가 상당히 클 수 밖에 없다.
+
+호스트 OS보다 높은 버전의 컨테이너 이미지는 `hyperv`로도 구동이 불가능하다. (이건 아무래도 라이센스와 어른들의 사정이 문제일듯 싶다)
 
 따라서 Windows 컨테이너를 만들어서 공개하기 위해서는, 각 Windows 버전별로 이미지를 만들어서 manifest list에 추가해줘야 한다.
-이 경우 위 예시의 `OSVersion` 속성으로 구분되게 되어 있다.
+여러 버전의 Windows 이미지를 추가하면 위 예시에서 보이는 `OSVersion` 속성으로 구분되게 되어 있다.
 
 ### Windows 컨테이너 버전 전체 호환성 목록
 
@@ -160,23 +169,23 @@ Buildkit을 사용할 수가 없다. OS버전 마다 `docker build`를 이용해
 ```shell
 # 통합 태그 생성
 regctl index create --media-type application/vnd.docker.distribution.manifest.list.v2+json \
-docker.io/dagui0/my-hello:20251117-6 \
---ref docker.io/dagui0/my-hello:linux-20251117-6 --platform linux/amd64 --platform linux/arm64 --platform linux/arm/v7 \
---ref docker.io/dagui0/my-hello:windows-ltsc2019-20251117-6 --platform windows/amd64,osver=10.0.17763.8027 \
---ref docker.io/dagui0/my-hello:windows-ltsc2022-20251117-6 --platform windows/amd64,osver=10.0.20348.4405 \
---ref docker.io/dagui0/my-hello:windows-ltsc2025-20251117-6 --platform windows/amd64,osver=10.0.26100.7171
+docker.io/dagui0/my-hello:20251121 \
+--ref docker.io/dagui0/my-hello:linux-20251121 --platform linux/amd64 --platform linux/arm64 --platform linux/arm/v7 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2019-20251121 --platform windows/amd64,osver=10.0.17763.8027 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2022-20251121 --platform windows/amd64,osver=10.0.20348.4405 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2025-20251121 --platform windows/amd64,osver=10.0.26100.7171
 
 # latest 생성(또는 덮어쓰기)
 regctl index create --media-type application/vnd.docker.distribution.manifest.list.v2+json \
 docker.io/dagui0/my-hello:latest \
---ref docker.io/dagui0/my-hello:linux-20251117-6 --platform linux/amd64 --platform linux/arm64 --platform linux/arm/v7 \
---ref docker.io/dagui0/my-hello:windows-ltsc2019-20251117-6 --platform windows/amd64,osver=10.0.17763.8027 \
---ref docker.io/dagui0/my-hello:windows-ltsc2022-20251117-6 --platform windows/amd64,osver=10.0.20348.4405 \
---ref docker.io/dagui0/my-hello:windows-ltsc2025-20251117-6 --platform windows/amd64,osver=10.0.26100.7171
+--ref docker.io/dagui0/my-hello:linux-20251121 --platform linux/amd64 --platform linux/arm64 --platform linux/arm/v7 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2019-20251121 --platform windows/amd64,osver=10.0.17763.8027 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2022-20251121 --platform windows/amd64,osver=10.0.20348.4405 \
+--ref docker.io/dagui0/my-hello:windows-ltsc2025-20251121 --platform windows/amd64,osver=10.0.26100.7171
 
 # OS별 태그 삭제
-regctl tag delete docker.io/dagui0/my-hello:linux-20251117-6
-regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2019-20251117-6
-regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2022-20251117-6
-regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2025-20251117-6
+regctl tag delete docker.io/dagui0/my-hello:linux-20251121
+regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2019-20251121
+regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2022-20251121
+regctl tag delete docker.io/dagui0/my-hello:windows-ltsc2025-20251121
 ```

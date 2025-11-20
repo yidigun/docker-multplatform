@@ -87,9 +87,11 @@ for target in $REPO/$IMAGE_NAME:$IMAGE_TAG $latest; do
 done
 
 # Remove temp tags (discard errors)
-for tag in "$@"; do
-    echo $regctl tag delete $REPO/$IMAGE_NAME:$tag
-    $regctl tag delete $REPO/$IMAGE_NAME:$tag
-done
+if [ "${RM_OS_TAGS:=yes}" = "yes" ]; then
+    for tag in "$@"; do
+        echo $regctl tag delete $REPO/$IMAGE_NAME:$tag
+        $regctl tag delete $REPO/$IMAGE_NAME:$tag
+    done
+fi
 
 exit $rs

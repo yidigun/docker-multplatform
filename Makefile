@@ -8,21 +8,26 @@
 PUBLIC_REPO  = docker.io
 LOCAL_REPO   = anas:5000
 IMAGE_NAME   = dagui0/my-hello
-IMAGE_TAG    = 20251117-7
+IMAGE_TAG    = 20251121-1
 
 # Release
 # For publishing to public repo, use `make PUSH_PUBLIC=yes SET_LATEST=yes`.
 #PUSH_PUBLIC  = yes
 #SET_LATEST   = yes
+#RM_OS_TAGS   = yes
 
 # Develop
+# Wheather to push to public repo
 PUSH_PUBLIC  = no
+# Whether to set 'latest' tag also
 SET_LATEST   = no
+# Wheather to remove OS specific tags after merging
+RM_OS_TAGS   = yes
 
 # Build hosts
 CONTEXT         =
 BUILDER         = crossbuilder
-CONTEXT_WINDOWS = yidigunhome
+CONTEXT_WINDOWS = vwin
 define BUILDER_CONFIG
 anas ssh://anas linux/arm64,linux/arm/v7,linux/arm/v6
 xvms ssh://xvms linux/amd64,linux/amd64/v2,linux/riscv64,linux/ppc64,linux/ppc64le,linux/s390x, linux/386, linux/loong64
@@ -37,7 +42,7 @@ TARGETS       =	build/linux-$(IMAGE_TAG) \
                 build/windows-ltsc2025-$(IMAGE_TAG)
 
 # Apply local environemnt
--include local.config.mk
+-include local.mk
 
 # Specify all the files for tracking changes
 LINUX_FILES   = hello.txt hello.sh
@@ -67,6 +72,7 @@ build/merge-public-$(IMAGE_TAG): $(TARGETS)
 	    IMAGE_NAME="$(IMAGE_NAME)" \
 	    IMAGE_TAG="$(IMAGE_TAG)" \
 	    SET_LATEST="$(SET_LATEST)" \
+	    RM_OS_TAGS="$(RM_OS_TAGS)" \
 	    CONTEXT="$(CONTEXT)" \
 	    BUILDER="$(BUILDER)" \
 	    LINUX_ARCHS="$(LINUX_ARCHS)" \
@@ -85,6 +91,7 @@ build/merge-local-$(IMAGE_TAG): $(TARGETS)
 	IMAGE_NAME="$(IMAGE_NAME)" \
 	IMAGE_TAG="$(IMAGE_TAG)" \
 	SET_LATEST="$(SET_LATEST)" \
+	RM_OS_TAGS="$(RM_OS_TAGS)" \
 	CONTEXT="$(CONTEXT)" \
 	BUILDER="$(BUILDER)" \
 	LINUX_ARCHS="$(LINUX_ARCHS)" \
